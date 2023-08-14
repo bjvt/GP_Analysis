@@ -1,6 +1,10 @@
 git config --global user.name barry-vt
 git config --global user.email barry@vontobel.cc
 
+git config --global user.name bjvt
+git config --global user.email barry.vontobel@gmail.com
+
+
 export GCM_CREDENTIAL_STORE=secretservice
 bvt@E6540:~$ git config --global credential.credentialStore secretservice
 

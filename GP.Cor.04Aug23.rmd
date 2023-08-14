@@ -1,10 +1,12 @@
 
 ---
 title: "GP.Corr.11Aug23"
-author: "bvt" 
+author: "bvt"
 date: "2023-08-30"
-output: html_document
-editor_options: 
+output:
+  html_document: default
+  pdf_document: default
+editor_options:
   chunk_output_type: console
 ---
 
@@ -46,7 +48,7 @@ library(tidyverse)
 library(asteRisk)
 
 # set your working directory
-setwd("/home/bvt/Dropbox/eng_science/R/wd/GP_Corr")
+#setwd("/home/bvt/Dropbox/eng_science/R/wd/GP_Corr")
 
 knitr::opts_knit$set(root.dir = "/home/bvt/Dropbox/eng_science/R/wd/GP_Corr")
 
@@ -56,9 +58,7 @@ knitr::opts_knit$set(root.dir = "/home/bvt/Dropbox/eng_science/R/wd/GP_Corr")
 
 Applications
 
-
-
-```{r prepare.data, echo=FALSE, warning=FALSE, results='asis'}
+```{r prepare.data, message=TRUE, warning=TRUE, include=FALSE, results='asis'}
 # load in the data sets
 df.source.1 <- read.csv("data/st_25544.history.csv", sep = ",", header = TRUE)
 # added mean_motion = 1 / (period/1440) value to celestrak
@@ -106,7 +106,7 @@ print(position_ECI)
 
 ```
 
-```{r coor.2, eval=FALSE, include=FALSE}
+```{r coor.2, eval=FALSE, message=TRUE, warning=FALSE, include=FALSE}
 # from Bard
 library(asteRisk)
 
@@ -139,7 +139,7 @@ print(xyz)
 
 ```
 
-```{r coor.3}
+```{r coor.3, eval=FALSE, include=FALSE}
 # from Bard
 library(asteRisk)
 #library(satellite)
@@ -162,6 +162,7 @@ print(as.data.frame(results_list))
 ```
 
 placeholder
+
 ```{r coor.4, eval=FALSE, include=FALSE}
 # # Create an empty list to store the results
 results_list <- list()
@@ -267,9 +268,33 @@ df <- data.frame(
 ```
 
 
-```{r PDF.1, eval=FALSE, include=FALSE}
+```{r PDF.1, echo=FALSE}
+library(ggplot2)
 
+# Create a vector of data
+data <- as.data.frame(df.source.1$MEAN_MOTION)
 
+# Plot the PDF
+ggplot(data = df.source.1, aes(x = df.source.1$MEAN_MOTION)) +
+  geom_density(color = "blue") +
+  labs(title = "PDF of the Mean") +
+  geom_vline(aes(xintercept=mean(df.source.1$MEAN_MOTION)),
+            color="blue", linetype="dashed", size=1) +
+  geom_histogram(aes(y=..density..), colour="black", fill="white")+
+            geom_density(alpha=.2, fill="#FF6666")
+print(ggplot)
+
+# Plot the CDF
+ggplot(data = df.source.1, aes(x = df.source.1$MEAN_ANOMALY)) +
+  stat_ecdf(color = "blue") +
+  labs(title = "CDF of the Mean Motion")
+
+# Add mean line
+
+ggplot(data=df.source.1, aes(y=MEAN_MOTION, x=df.source.1$REV_AT_EPOCH, group=1)) +
+  geom_line()
+  #geom_point()
+print(ggplot)
 
 ```
 
