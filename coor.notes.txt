@@ -1,0 +1,93 @@
+git config --global user.name barry-vt
+git config --global user.email barry@vontobel.cc
+
+export GCM_CREDENTIAL_STORE=secretservice
+bvt@E6540:~$ git config --global credential.credentialStore secretservice
+
+
+gitcreds::
+some work done on using probablity distribuiton over 
+
+https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md
+
+gitcreds_get(use_cache = FALSE)
+
+credentials::set_github_pat()
+
+https://ropensci.org/blog/2020/07/07/github-pat/
+
+Yes, there has been work on using the calculated probability distribution instead of the variance in orbit determination. This is because the variance only represents the second moment of the distribution, and it can be misleading if the distribution is not Gaussian. For example, if the distribution is skewed, the variance will underestimate the uncertainty.
+
+One approach to using the calculated probability distribution is to use a Bayesian filter. A Bayesian filter is a recursive algorithm that updates the probability distribution of the state of a system based on new measurements. This allows the filter to track the non-Gaussian distribution of the state, and to provide more accurate estimates of the uncertainty.
+
+Another approach to using the calculated probability distribution is to use a Monte Carlo method. A Monte Carlo method is a numerical technique that uses random sampling to approximate the solution to a problem. In orbit determination, a Monte Carlo method can be used to generate a large number of samples from the calculated probability distribution. These samples can then be used to estimate the mean, variance, and other statistical properties of the distribution.
+
+The use of the calculated probability distribution in orbit determination is still an active area of research. However, the methods described above have shown promise in improving the accuracy and robustness of orbit determination algorithms.
+
+Here are some specific examples of work that has been done on using the calculated probability distribution in orbit determination:
+
+In 2012, Alinda Mashiku and James Garvin published a paper in the Journal of Guidance, Control, and Dynamics titled "Representation of Probability Density Functions from Orbit Determination using the Particle Filter". In this paper, the authors proposed using the particle filter to represent the probability density function of the state of a satellite. The particle filter is a Bayesian filter that is capable of tracking non-Gaussian distributions. The authors showed that the particle filter could be used to improve the accuracy of orbit determination for satellites with highly eccentric orbits.
+In 2014, Jing-Hao Chen and Chien-Lung Lin published a paper in the Aerospace Science and Technology titled "A Monte Carlo method for asteroid orbit determination using Bayesian probabilities". In this paper, the authors proposed using a Monte Carlo method to estimate the probability distribution of the orbit of an asteroid. The authors showed that the Monte Carlo method could be used to improve the accuracy of orbit determination for asteroids with non-Gaussian distributions.
+
+------------------------------------------------------------
+# Function to convert Keplerian elements to ECI coordinates
+kep2eci <- function(a, e, i, argp, raan, nu, mu = 398600.4418) {
+  # Convert angles from degrees to radians
+  i_rad <- i * pi / 180
+  argp_rad <- argp * pi / 180
+  raan_rad <- raan * pi / 180
+  nu_rad <- nu * pi / 180
+  
+  # Compute the semi-latus rectum
+  p <- a * (1 - e^2)
+  
+  # Compute the radius (r) and velocity (v) magnitudes
+  r <- p / (1 + e * cos(nu_rad))
+  v <- sqrt(mu / p) * e * sin(nu_rad)
+  
+  # Compute the position and velocity in the perifocal frame
+  x_peri <- r * cos(nu_rad)
+  y_peri <- r * sin(nu_rad)
+  vx_peri <- v * cos(nu_rad + argp_rad)
+  vy_peri <- v * sin(nu_rad + argp_rad)
+  
+  # Compute the transformation matrix from the perifocal frame to the ECI frame
+  R <- matrix(0, nrow = 3, ncol = 3)
+  R[1, 1] <- cos(raan_rad) * cos(argp_rad) - sin(raan_rad) * sin(argp_rad) * cos(i_rad)
+  R[1, 2] <- -cos(raan_rad) * sin(argp_rad) - sin(raan_rad) * cos(argp_rad) * cos(i_rad)
+  R[1, 3] <- sin(raan_rad) * sin(i_rad)
+  R[2, 1] <- sin(raan_rad) * cos(argp_rad) + cos(raan_rad) * sin(argp_rad) * cos(i_rad)
+  R[2, 2] <- -sin(raan_rad) * sin(argp_rad) + cos(raan_rad) * cos(argp_rad) * cos(i_rad)
+  R[2, 3] <- -cos(raan_rad) * sin(i_rad)
+  R[3, 1] <- sin(argp_rad) * sin(i_rad)
+  R[3, 2] <- cos(argp_rad) * sin(i_rad)
+  R[3, 3] <- cos(i_rad)
+  
+  # Compute the position and velocity in the ECI frame
+  position <- R %*% c(x_peri, y_peri, 0)
+  velocity <- R %*% c(vx_peri, vy_peri, 0)
+  
+  return(list(x = position[1], y = position[2], z = position[3], vx = velocity[1], vy = velocity[2], vz = velocity[3]))
+}
+
+# Sample data frame with Keplerian elements for multiple RSOs
+data <- data.frame(
+  a = c(7000, 8000),  # km
+  e = c(0.1, 0.2),
+  i = c(30, 45),  # degrees
+  argp = c(90, 120),  # degrees
+  raan = c(60, 90),  # degrees
+  nu = c(60, 120)  # degrees
+)
+
+# Convert Keplerian elements to ECI coordinates for each RSO
+eci_coords <- lapply(1:nrow(data), function(i) {
+  with(data[i, ], kep2eci(a, e, i, argp, raan, nu))
+})
+
+# Convert the list of coordinates to a data frame
+eci_df <- as.data.frame(do.call(rbind, eci_coords))
+
+# Print the resulting ECI coordinates
+print(eci_df)
+
