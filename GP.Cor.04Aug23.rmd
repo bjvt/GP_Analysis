@@ -292,7 +292,7 @@ ggplot(data = df.source.1, aes(x = df.source.1$MEAN_ANOMALY)) +
 # Add mean line
 
 ggplot(data=df.source.1, aes(y=MEAN_MOTION, x=df.source.1$REV_AT_EPOCH, group=1)) +
-  geom_line()
+  geom_smooth()
   #geom_point()
 print(ggplot)
 
