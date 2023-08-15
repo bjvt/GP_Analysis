@@ -19,6 +19,11 @@ gitcreds_get(use_cache = FALSE)
 credentials::set_github_pat()
 
 https://ropensci.org/blog/2020/07/07/github-pat/
+--------------------------
+pomp : This package is a general-purpose state-space modeling package that includes a particle filter implementation.
+pf : This package is a more specialized package that is specifically designed for particle filtering.
+ParticleFilter : This package is a newer package that provides a more intuitive interface for particle filtering.
+
 
 Yes, there has been work on using the calculated probability distribution instead of the variance in orbit determination. This is because the variance only represents the second moment of the distribution, and it can be misleading if the distribution is not Gaussian. For example, if the distribution is skewed, the variance will underestimate the uncertainty.
 
